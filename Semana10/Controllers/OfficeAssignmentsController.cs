@@ -84,11 +84,13 @@ namespace Semana10.Controllers
         // más información vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "InstructorID,Location,active")] OfficeAssignment officeAssignment)
+        public ActionResult Edit([Bind(Include = "InstructorID,Location")] OfficeAssignment officeAssignment)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(officeAssignment).State = EntityState.Modified;
+                OfficeAssignment offAss = db.OfficeAssignments.Find(officeAssignment.InstructorID);
+                officeAssignment.Location = offAss.Location;
+                db.Entry(offAss).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
