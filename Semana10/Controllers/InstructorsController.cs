@@ -11,114 +11,112 @@ using Semana10.Models;
 
 namespace Semana10.Controllers
 {
-    public class OfficeAssignmentsController : Controller
+    public class InstructorsController : Controller
     {
         private SchoolContext db = new SchoolContext();
 
-        // GET: OfficeAssignments
+        // GET: Instructors
         public ActionResult Index()
         {
-            var officeAssignments = db.OfficeAssignments.Where(o => o.active == 1).Include(o => o.Instructor);
-            return View(officeAssignments.ToList());
+            var people = db.Instructors.Include(i => i.OfficeAssigment);
+            return View(people.ToList());
         }
 
-        // GET: OfficeAssignments/Details/5
+        // GET: Instructors/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            OfficeAssignment officeAssignment = db.OfficeAssignments.Find(id);
-            if (officeAssignment == null)
+            Instructor instructor = db.Instructors.Find(id);
+            if (instructor == null)
             {
                 return HttpNotFound();
             }
-            return View(officeAssignment);
+            return View(instructor);
         }
 
-        // GET: OfficeAssignments/Create
+        // GET: Instructors/Create
         public ActionResult Create()
         {
-            ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "LastName");
+            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location");
             return View();
         }
 
-        // POST: OfficeAssignments/Create
+        // POST: Instructors/Create
         // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que desea enlazarse. Para obtener 
         // más información vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "InstructorID,Location")] OfficeAssignment officeAssignment)
+        public ActionResult Create([Bind(Include = "ID,LastName,FirstMidName,HireDate")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
-                officeAssignment.active = 1;
-                db.OfficeAssignments.Add(officeAssignment);
+                db.Instructors.Add(instructor);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "LastName", officeAssignment.InstructorID);
-            return View(officeAssignment);
+            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            return View(instructor);
         }
 
-        // GET: OfficeAssignments/Edit/5
+        // GET: Instructors/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            OfficeAssignment officeAssignment = db.OfficeAssignments.Find(id);
-            if (officeAssignment == null)
+            Instructor instructor = db.Instructors.Find(id);
+            if (instructor == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "LastName", officeAssignment.InstructorID);
-            return View(officeAssignment);
+            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            return View(instructor);
         }
 
-        // POST: OfficeAssignments/Edit/5
+        // POST: Instructors/Edit/5
         // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que desea enlazarse. Para obtener 
         // más información vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "InstructorID,Location,active")] OfficeAssignment officeAssignment)
+        public ActionResult Edit([Bind(Include = "ID,LastName,FirstMidName,HireDate")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(officeAssignment).State = EntityState.Modified;
+                db.Entry(instructor).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "LastName", officeAssignment.InstructorID);
-            return View(officeAssignment);
+            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            return View(instructor);
         }
 
-        // GET: OfficeAssignments/Delete/5
+        // GET: Instructors/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            OfficeAssignment officeAssignment = db.OfficeAssignments.Find(id);
-            if (officeAssignment == null)
+            Instructor instructor = db.Instructors.Find(id);
+            if (instructor == null)
             {
                 return HttpNotFound();
             }
-            return View(officeAssignment);
+            return View(instructor);
         }
 
-        // POST: OfficeAssignments/Delete/5
+        // POST: Instructors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            OfficeAssignment officeAssignment = db.OfficeAssignments.Find(id);
-            //db.OfficeAssignments.Remove(officeAssignment);
-            officeAssignment.active = 0;
+            Instructor instructor = db.Instructors.Find(id);
+            db.People.Remove(instructor);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
